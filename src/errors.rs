@@ -24,6 +24,7 @@ unsafe fn termination_handler() {
     // we can delete files, since fdopendir is thread-safe, and
     // `openat`, `unlinkat`, and `lstat` are signal-safe.
     //  https://man7.org/linux/man-pages/man7/signal-safety.7.html
+    #[allow(static_mut_refs)]
     if !TERMINATED.swap(true, Ordering::SeqCst) && temp::has_tempfiles() {
         temp::clean();
     }
@@ -102,6 +103,7 @@ unsafe fn termination_handler() {
     // however, we'd need to store the engine path and the argument list as
     // a global CString and `Vec<CString>`, respectively. this atomic guard
     // makes this safe regardless.
+    #[allow(static_mut_refs)]
     docker::CHILD_CONTAINER.terminate();
 
     // all termination exit codes are 128 + signal code. the exit code is
